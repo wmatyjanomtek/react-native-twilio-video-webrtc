@@ -27,7 +27,7 @@ import android.support.annotation.StringDef;
 import android.util.Log;
 import android.view.View;
 
-import com.twilio:audioswitch.AudioSwitch;
+import com.twilio.audioswitch.AudioSwitch;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
