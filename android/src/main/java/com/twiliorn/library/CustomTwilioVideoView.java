@@ -27,6 +27,7 @@ import android.support.annotation.StringDef;
 import android.util.Log;
 import android.view.View;
 
+import com.twilio:audioswitch.AudioSwitch;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -140,7 +141,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
             Events.ON_PARTICIPANT_DISABLED_AUDIO_TRACK,
             Events.ON_STATS_RECEIVED,
             Events.ON_NETWORK_QUALITY_LEVELS_CHANGED,
-            Events.ON_DOMINANT_SPEAKER_CHANGED
+            Events.ON_DOMINANT_SPEAKER_CHANGED,
+            Events.ON_AUDIO_DEVICE_SWITCHED
     })
     public @interface Events {
         String ON_CAMERA_SWITCHED = "onCameraSwitched";
@@ -165,6 +167,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         String ON_STATS_RECEIVED = "onStatsReceived";
         String ON_NETWORK_QUALITY_LEVELS_CHANGED = "onNetworkQualityLevelsChanged";
         String ON_DOMINANT_SPEAKER_CHANGED = "onDominantSpeakerDidChange";
+        String ON_AUDIO_DEVICE_SWITCHED = "onAudioDeviceSwitched";
     }
 
     private final ThemedReactContext themedReactContext;
@@ -204,6 +207,8 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
 
     private LocalDataTrack localDataTrack;
 
+    private AudioSwitch audioSwitch;
+
     // Map used to map remote data tracks to remote participants
     private final Map<RemoteDataTrack, RemoteParticipant> dataTrackRemoteParticipantMap =
             new HashMap<>();
@@ -222,6 +227,7 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         audioManager = (AudioManager) themedReactContext.getSystemService(Context.AUDIO_SERVICE);
         myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
         intentFilter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        audioSwitch = new AudioSwitch(context);
 
         // Create the local data track
         // localDataTrack = LocalDataTrack.create(this);
@@ -497,6 +503,10 @@ public class CustomTwilioVideoView extends View implements LifecycleEventListene
         }
 
         room = Video.connect(getContext(), connectOptionsBuilder.build(), roomListener());
+
+        Log.d("RNTwilioVideo", audioSwitch.getAvailableDevices().toString());
+
+        Log.d("RNTwilioVideo", audioSwitch.getSelectedAudioDevice().toString());
     }
 
     private void setAudioFocus(boolean focus) {
